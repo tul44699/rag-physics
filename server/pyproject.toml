@@ -1,0 +1,34 @@
+[project]
+name = "server"
+version = "0.1.0"
+description = "Physics RAG study assistant backend"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.136.1",
+    "langchain>=0.3.25",
+    "langchain-ollama>=0.3.0",
+    "langchain-openai>=0.3.16",
+    "langchain-text-splitters>=0.3.0",
+    "pgvector>=0.4.1",
+    "psycopg[binary]>=3.2.9",
+    "pydantic-settings>=2.11.0",
+    "pypdf>=5.4.0",
+    "bcrypt>=4.0.0",
+    "python-dotenv>=1.1.1",
+    "python-jose[cryptography]>=3.4.0",
+    "sqlalchemy>=2.0.41",
+    "sentence-transformers>=5.4.1",
+    "langchain-google-genai>=4.2.2",
+    "marker-pdf>=1.10.0",
+    "llama-parse>=0.6.94",
+    "llama-cloud-services>=0.6.94",
+    "langchain-huggingface>=1.2.2",
+    "langchain-community>=0.4.1",
+]
+
+[dependency-groups]
+dev = [
+    "fpdf2>=2.8.0",
+    "pytest>=8.0.0",
+]
