@@ -1,0 +1,7 @@
+.container { position: relative; }
+.input { padding: 0.25rem 0.5rem; border: 1px solid #000; font-size: 0.75rem; width: 180px; }
+.dropdown { position: absolute; top: 100%; right: 0; width: 340px; max-height: 280px; overflow-y: auto; background: #fff; border: 1px solid #000; z-index: 100; margin-top: 2px; }
+.item { display: flex; gap: 0.35rem; width: 100%; text-align: left; background: none; border: none; border-bottom: 1px solid #ddd; padding: 0.3rem 0.5rem; font-size: 0.7rem; cursor: pointer; align-items: flex-start; }
+.item:hover { background: #f4f4f4; }
+.icon { flex-shrink: 0; width: 18px; height: 18px; border: 1px solid #000; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; margin-top: 1px; }
+.snippet { line-height: 1.3; }
