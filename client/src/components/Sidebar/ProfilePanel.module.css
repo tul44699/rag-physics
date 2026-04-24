@@ -1,0 +1,14 @@
+.panel { border-bottom: 1px solid #000; }
+.header { display: flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.5rem; }
+.user { font-size: 0.72rem; color: #666; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.levelBadge { font-size: 0.6rem; font-weight: 600; padding: 0.1rem 0.4rem; border: 1px solid #000; text-transform: capitalize; }
+.editBtn { font-size: 0.65rem; font-weight: 500; background: none; border: 1px solid #000; padding: 0.1rem 0.35rem; color: #000; cursor: pointer; }
+.editBtn:hover { background: #f4f4f4; }
+.body { padding: 0 0.5rem 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.field { display: flex; flex-direction: column; font-size: 0.7rem; color: #666; gap: 0.15rem; }
+.input { padding: 0.3rem; border: 1px solid #000; font-size: 0.75rem; }
+.actions { display: flex; gap: 0.35rem; margin-top: 0.15rem; }
+.saveBtn { flex: 1; padding: 0.35rem 0; background: #000; color: #fff; border: none; font-size: 0.75rem; cursor: pointer; }
+.saveBtn:disabled { opacity: 0.5; }
+.logoutBtn { padding: 0.35rem 0.5rem; background: none; border: 1px solid #000; font-size: 0.72rem; color: #000; cursor: pointer; }
+.logoutBtn:hover { background: #f4f4f4; }

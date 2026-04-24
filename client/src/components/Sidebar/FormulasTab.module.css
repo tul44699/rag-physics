@@ -1,0 +1,14 @@
+.container { overflow-y: auto; flex: 1; padding: 0.5rem; }
+.empty { padding: 1rem; color: #666; font-size: 0.8rem; }
+.controls { display: flex; gap: 0.3rem; margin-bottom: 0.5rem; align-items: center; }
+.controls select { flex: 1; padding: 0.2rem; border: 1px solid #000; font-size: 0.68rem; min-width: 0; }
+.btn { padding: 0.25rem 0.5rem; background: #000; color: #fff; border: none; font-size: 0.7rem; cursor: pointer; }
+.btn:disabled { opacity: 0.4; }
+.error { font-size: 0.72rem; margin-bottom: 0.3rem; }
+.chapter { margin-bottom: 0.6rem; }
+.chapterTitle { font-size: 0.78rem; margin: 0 0 0.25rem; }
+.section { margin-bottom: 0.3rem; }
+.sectionTitle { font-size: 0.7rem; font-weight: 600; margin: 0 0 0.15rem; color: #666; }
+.item { display: flex; align-items: center; justify-content: space-between; padding: 0.2rem 0; border-bottom: 1px solid #ddd; font-size: 0.72rem; }
+.itemText { flex: 1; overflow: hidden; }
+.pageNum { color: #999; font-size: 0.65rem; margin-left: 0.3rem; flex-shrink: 0; }
