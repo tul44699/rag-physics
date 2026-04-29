@@ -48,7 +48,7 @@ This sends the PDF to LlamaParse which converts it to markdown with LaTeX. Every
 ```
 Client (React) ──REST──▶ Server (FastAPI) ──SQL──▶ PostgreSQL + pgvector
                               │
-                              ├──▶ vLLM (chat + embeddings + rerank)
+                              ├──▶ Ollama (chat + embeddings + rerank)
                               └──▶ LlamaParse (PDF extraction)
 ```
 
@@ -58,7 +58,7 @@ Client (React) ──REST──▶ Server (FastAPI) ──SQL──▶ PostgreSQ
 
 | What | Using |
 |---|---|
-| Chat model | Qwen 3.5 instruct 9B via vLLM hosted on GCP |
+| Chat model | Qwen 3.5 instruct 9B via Ollama hosted on GCP |
 | Embeddings | Qwen Embedding 0.6B (remote) or bge-large (local) |
 | PDF parsing | LlamaParse cloud API |
 | Vector DB | PostgreSQL with pgvector |
@@ -71,7 +71,7 @@ Copy `.env.example` to `server/.env` and fill in:
 
 | env var | use |
 |---|---|
-| `VLLM_BASE_URL` | Endpoint for hosted vLLM instance |
+| `VLLM_BASE_URL` | Misnomer, its the url for Ollama hosted API |
 | `CHAT_MODEL` | Model name |
 | `LLAMAPARSE_API_KEY` | LlamaParse API key (required for ingestion) |
 | `EMBEDDING_BASE_URL` | Remote embeddings endpoint (optional, falls back to local) |
