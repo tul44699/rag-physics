@@ -1,29 +1,143 @@
-.bubble { padding: 0.5rem; font-size: 0.8rem; line-height: 1.45; max-width: 100%; }
-.user { background: #f4f4f4; align-self: flex-end; }
-.assistant { background: #fff; align-self: flex-start; border: 1px solid #ddd; }
-.taskBadge { font-size: 0.6rem; text-transform: uppercase; color: #666; margin-bottom: 0.2rem; }
-.content { word-break: break-word; }
-.content h2 { font-size: 0.9rem; margin: 0.5rem 0 0.25rem; }
-.content h3 { font-size: 0.8rem; margin: 0.4rem 0 0.2rem; }
-.content p { margin: 0.25rem 0; }
-.content ul, .content ol { margin: 0.25rem 0; padding-left: 1.2rem; }
-.content li { margin: 0.1rem 0; }
-.content code { font-size: 0.72rem; background: #f4f4f4; padding: 0.1rem 0.25rem; }
-.content .katex { font-size: 0.85rem; }
-.content .katex-display { margin: 0.35rem 0; }
-.content pre { font-size: 0.72rem; background: #f4f4f4; padding: 0.4rem; overflow-x: auto; }
-.citations { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.4rem; padding-top: 0.35rem; border-top: 1px solid #ddd; }
-.cite { font-size: 0.65rem; padding: 0.1rem 0.35rem; border: 1px solid #000; cursor: pointer; }
-.cite:hover { background: #f4f4f4; }
-.inlineCite { font-size: 0.68rem; font-weight: 600; background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; }
-.deck { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.5rem; }
-.card { perspective: 600px; cursor: pointer; min-height: 5rem; }
-.cardInner { position: relative; width: 100%; min-height: 5rem; transition: transform 0.3s ease; transform-style: preserve-3d; border: 1px solid #000; }
-.flipped .cardInner { transform: rotateY(180deg); }
-.cardFront, .cardBack { position: absolute; inset: 0; backface-visibility: hidden; padding: 0.5rem; overflow-y: auto; }
-.cardFront { background: #fff; }
-.cardBack { background: #f4f4f4; transform: rotateY(180deg); }
-.flipped .cardFront { visibility: hidden; }
-.cardLabel { display: inline-block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #666; margin-bottom: 0.2rem; }
-.cardFront p, .cardBack p { margin: 0.15rem 0; font-size: 0.78rem; }
-.cardFront .katex, .cardBack .katex { font-size: 0.82rem; }
+.bubble {
+	padding: 0.5rem;
+	font-size: 0.8rem;
+	line-height: 1.45;
+	max-width: 100%;
+}
+.user {
+	background: #f4f4f4;
+	align-self: flex-end;
+}
+.assistant {
+	background: #fff;
+	align-self: flex-start;
+	border: 1px solid #ddd;
+}
+.taskBadge {
+	font-size: 0.6rem;
+	text-transform: uppercase;
+	color: #666;
+	margin-bottom: 0.2rem;
+}
+.content {
+	word-break: break-word;
+}
+.content h2 {
+	font-size: 0.9rem;
+	margin: 0.5rem 0 0.25rem;
+}
+.content h3 {
+	font-size: 0.8rem;
+	margin: 0.4rem 0 0.2rem;
+}
+.content p {
+	margin: 0.25rem 0;
+}
+.content ul,
+.content ol {
+	margin: 0.25rem 0;
+	padding-left: 1.2rem;
+}
+.content li {
+	margin: 0.1rem 0;
+}
+.content code {
+	font-size: 0.72rem;
+	background: #f4f4f4;
+	padding: 0.1rem 0.25rem;
+}
+.content .katex {
+	font-size: 0.85rem;
+}
+.content .katex-display {
+	margin: 0.35rem 0;
+}
+.content pre {
+	font-size: 0.72rem;
+	background: #f4f4f4;
+	padding: 0.4rem;
+	overflow-x: auto;
+}
+.citations {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	margin-top: 0.4rem;
+	padding-top: 0.35rem;
+	border-top: 1px solid #ddd;
+}
+.cite {
+	font-size: 0.65rem;
+	padding: 0.1rem 0.35rem;
+	border: 1px solid #000;
+	cursor: pointer;
+}
+.cite:hover {
+	background: #f4f4f4;
+}
+.inlineCite {
+	font-size: 0.68rem;
+	font-weight: 600;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	text-decoration: underline;
+}
+.deck {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+.card {
+	perspective: 600px;
+	cursor: pointer;
+	min-height: 5rem;
+}
+.cardInner {
+	position: relative;
+	width: 100%;
+	min-height: 5rem;
+	transition: transform 0.3s ease;
+	transform-style: preserve-3d;
+	border: 1px solid #000;
+}
+.flipped .cardInner {
+	transform: rotateY(180deg);
+}
+.cardFront,
+.cardBack {
+	position: absolute;
+	inset: 0;
+	backface-visibility: hidden;
+	padding: 0.5rem;
+	overflow-y: auto;
+}
+.cardFront {
+	background: #fff;
+}
+.cardBack {
+	background: #f4f4f4;
+	transform: rotateY(180deg);
+}
+.flipped .cardFront {
+	visibility: hidden;
+}
+.cardLabel {
+	display: inline-block;
+	font-size: 0.6rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	color: #666;
+	margin-bottom: 0.2rem;
+}
+.cardFront p,
+.cardBack p {
+	margin: 0.15rem 0;
+	font-size: 0.78rem;
+}
+.cardFront .katex,
+.cardBack .katex {
+	font-size: 0.82rem;
+}

@@ -1,7 +1,38 @@
-.container { display: flex; flex-direction: column; align-items: center; }
-.zoomBar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; padding: 0.3rem 0.75rem; border: 1px solid #000; }
-.zoomBtn { border: 1px solid #000; background: #fff; padding: 0.2rem 0.6rem; font-size: 0.85rem; cursor: pointer; }
-.zoomBtn:hover { background: #f4f4f4; }
-.zoomLabel { font-size: 0.75rem; min-width: 3rem; text-align: center; }
-.loading { color: #666; font-size: 0.85rem; padding: 2rem; }
-.error { font-size: 0.85rem; padding: 2rem; text-align: center; }
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.zoomBar {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+	padding: 0.3rem 0.75rem;
+	border: 1px solid #000;
+}
+.zoomBtn {
+	border: 1px solid #000;
+	background: #fff;
+	padding: 0.2rem 0.6rem;
+	font-size: 0.85rem;
+	cursor: pointer;
+}
+.zoomBtn:hover {
+	background: #f4f4f4;
+}
+.zoomLabel {
+	font-size: 0.75rem;
+	min-width: 3rem;
+	text-align: center;
+}
+.loading {
+	color: #666;
+	font-size: 0.85rem;
+	padding: 2rem;
+}
+.error {
+	font-size: 0.85rem;
+	padding: 2rem;
+	text-align: center;
+}

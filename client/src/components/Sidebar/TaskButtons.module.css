@@ -1,5 +1,23 @@
-.row { display: flex; flex-wrap: wrap; gap: 0.3rem; padding: 0.5rem; border-bottom: 1px solid #000; }
-.btn { padding: 0.3rem 0.6rem; border: 1px solid #000; background: #fff; font-size: 0.73rem; }
-.btn:hover { background: #f4f4f4; }
-.active { background: #000; color: #fff; }
-.active:hover { background: #333; }
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3rem;
+	padding: 0.5rem;
+	border-bottom: 1px solid #000;
+}
+.btn {
+	padding: 0.3rem 0.6rem;
+	border: 1px solid #000;
+	background: #fff;
+	font-size: 0.73rem;
+}
+.btn:hover {
+	background: #f4f4f4;
+}
+.active {
+	background: #000;
+	color: #fff;
+}
+.active:hover {
+	background: #333;
+}

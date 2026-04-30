@@ -1,8 +1,45 @@
-.empty { padding: 1rem; color: #666; font-size: 0.8rem; }
-.taskRow { display: flex; flex-wrap: wrap; gap: 2px; padding: 0.4rem; border-bottom: 1px solid #000; }
-.taskBtn { padding: 0.25rem 0.5rem; border: 1px solid #ddd; background: #fff; font-size: 0.68rem; cursor: pointer; }
-.taskBtn:hover { background: #f4f4f4; }
-.taskBtnActive { background: #000; color: #fff; border-color: #000; }
-.chapterRange { display: flex; align-items: center; gap: 0.3rem; padding: 0.35rem 0.5rem; border-bottom: 1px solid #ddd; }
-.chapterRange select { flex: 1; padding: 0.2rem; border: 1px solid #000; font-size: 0.68rem; min-width: 0; }
-.chapterSep { font-size: 0.65rem; color: #666; }
+.empty {
+	padding: 1rem;
+	color: #666;
+	font-size: 0.8rem;
+}
+.taskRow {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+	padding: 0.4rem;
+	border-bottom: 1px solid #000;
+}
+.taskBtn {
+	padding: 0.25rem 0.5rem;
+	border: 1px solid #ddd;
+	background: #fff;
+	font-size: 0.68rem;
+	cursor: pointer;
+}
+.taskBtn:hover {
+	background: #f4f4f4;
+}
+.taskBtnActive {
+	background: #000;
+	color: #fff;
+	border-color: #000;
+}
+.chapterRange {
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
+	padding: 0.35rem 0.5rem;
+	border-bottom: 1px solid #ddd;
+}
+.chapterRange select {
+	flex: 1;
+	padding: 0.2rem;
+	border: 1px solid #000;
+	font-size: 0.68rem;
+	min-width: 0;
+}
+.chapterSep {
+	font-size: 0.65rem;
+	color: #666;
+}

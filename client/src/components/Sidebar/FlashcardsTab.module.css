@@ -1,23 +1,113 @@
-.list { overflow-y: auto; flex: 1; padding: 0.5rem; }
-.deckItem { margin-bottom: 0.35rem; border: 1px solid #000; overflow: hidden; }
-.deckHeader { display: flex; align-items: center; gap: 0.35rem; width: 100%; padding: 0.4rem 0.5rem; background: #f4f4f4; border: none; cursor: pointer; font-size: 0.75rem; text-align: left; }
-.deckHeader:hover { background: #e8e8e8; }
-.chevron { font-size: 0.65rem; color: #666; width: 0.8rem; }
-.time { margin-left: auto; font-size: 0.65rem; color: #666; }
-.cards { padding: 0.4rem; display: flex; flex-direction: column; gap: 0.4rem; }
-.card { perspective: 500px; cursor: pointer; min-height: 4.5rem; }
-.cardInner { position: relative; width: 100%; min-height: 4.5rem; transition: transform 0.3s ease; transform-style: preserve-3d; border: 1px solid #000; }
-.flipped .cardInner { transform: rotateY(180deg); }
-.cardFront, .cardBack { position: absolute; inset: 0; backface-visibility: hidden; padding: 0.4rem 0.5rem; overflow-y: auto; }
-.cardFront { background: #fff; }
-.cardBack { background: #f4f4f4; transform: rotateY(180deg); }
-.flipped .cardFront { visibility: hidden; }
-.cardLabel { display: inline-block; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; color: #666; margin-bottom: 0.15rem; }
-.cardContent { font-size: 0.75rem; }
-.cardContent .katex { font-size: 0.78rem; }
-.markdownBody { padding: 0.4rem 0.5rem; font-size: 0.75rem; line-height: 1.45; }
-.markdownBody h2 { font-size: 0.85rem; margin: 0.4rem 0 0.2rem; }
-.markdownBody h3 { font-size: 0.78rem; margin: 0.3rem 0 0.15rem; }
-.markdownBody .katex { font-size: 0.8rem; }
-.markdownBody .katex-display { margin: 0.3rem 0; }
-.empty { padding: 1rem; color: #666; font-size: 0.8rem; }
+.list {
+	overflow-y: auto;
+	flex: 1;
+	padding: 0.5rem;
+}
+.deckItem {
+	margin-bottom: 0.35rem;
+	border: 1px solid #000;
+	overflow: hidden;
+}
+.deckHeader {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	width: 100%;
+	padding: 0.4rem 0.5rem;
+	background: #f4f4f4;
+	border: none;
+	cursor: pointer;
+	font-size: 0.75rem;
+	text-align: left;
+}
+.deckHeader:hover {
+	background: #e8e8e8;
+}
+.chevron {
+	font-size: 0.65rem;
+	color: #666;
+	width: 0.8rem;
+}
+.time {
+	margin-left: auto;
+	font-size: 0.65rem;
+	color: #666;
+}
+.cards {
+	padding: 0.4rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+.card {
+	perspective: 500px;
+	cursor: pointer;
+	min-height: 4.5rem;
+}
+.cardInner {
+	position: relative;
+	width: 100%;
+	min-height: 4.5rem;
+	transition: transform 0.3s ease;
+	transform-style: preserve-3d;
+	border: 1px solid #000;
+}
+.flipped .cardInner {
+	transform: rotateY(180deg);
+}
+.cardFront,
+.cardBack {
+	position: absolute;
+	inset: 0;
+	backface-visibility: hidden;
+	padding: 0.4rem 0.5rem;
+	overflow-y: auto;
+}
+.cardFront {
+	background: #fff;
+}
+.cardBack {
+	background: #f4f4f4;
+	transform: rotateY(180deg);
+}
+.flipped .cardFront {
+	visibility: hidden;
+}
+.cardLabel {
+	display: inline-block;
+	font-size: 0.58rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	color: #666;
+	margin-bottom: 0.15rem;
+}
+.cardContent {
+	font-size: 0.75rem;
+}
+.cardContent .katex {
+	font-size: 0.78rem;
+}
+.markdownBody {
+	padding: 0.4rem 0.5rem;
+	font-size: 0.75rem;
+	line-height: 1.45;
+}
+.markdownBody h2 {
+	font-size: 0.85rem;
+	margin: 0.4rem 0 0.2rem;
+}
+.markdownBody h3 {
+	font-size: 0.78rem;
+	margin: 0.3rem 0 0.15rem;
+}
+.markdownBody .katex {
+	font-size: 0.8rem;
+}
+.markdownBody .katex-display {
+	margin: 0.3rem 0;
+}
+.empty {
+	padding: 1rem;
+	color: #666;
+	font-size: 0.8rem;
+}
