@@ -13,6 +13,7 @@ def _chunk(lst: list, size: int) -> Generator:
 def _get_local_embedder():
     """Lazy-load local BGE embedder."""
     from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+
     return HuggingFaceBgeEmbeddings(
         model_name=settings.embedding_model,
         model_kwargs={"device": "cpu"},
@@ -34,7 +35,9 @@ def _embed_remote(texts: list[str]) -> list[list[float]] | None:
         vectors = [d.embedding for d in resp.data]
         actual_dim = len(vectors[0]) if vectors else 0
         if actual_dim != settings.embedding_dim:
-            print(f"[WARN] remote embedding returned {actual_dim}d vectors, but EMBEDDING_DIM={settings.embedding_dim}. Update your .env!")
+            print(
+                f"[WARN] remote embedding returned {actual_dim}d vectors, but EMBEDDING_DIM={settings.embedding_dim}. Update your .env!"
+            )
         return vectors
     except Exception as e:
         print(f"[WARN] remote embedding failed: {e}")

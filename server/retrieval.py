@@ -50,11 +50,15 @@ def _dense_search(
     page_end: int | None = None,
     section: str | None = None,
 ) -> list[dict]:
-    where, params = _build_filters(textbook_ids, group_name, chunk_types, page_start, page_end, section)
+    where, params = _build_filters(
+        textbook_ids, group_name, chunk_types, page_start, page_end, section
+    )
     params["vector"] = embed_text(query, is_query=True)
     params["top_k"] = top_k
 
-    rows = db.execute(text(f"""
+    rows = (
+        db.execute(
+            text(f"""
         SELECT tc.id, tc.content, tc.chapter, tc.section, tc.chunk_type,
                tc.page_start, tc.page_end,
                tb.id AS textbook_id, tb.title AS textbook_title, tb.group_name,
@@ -64,7 +68,12 @@ def _dense_search(
         WHERE {where}
         ORDER BY score DESC
         LIMIT :top_k
-    """), params).mappings().all()
+    """),
+            params,
+        )
+        .mappings()
+        .all()
+    )
     return [dict(row) for row in rows]
 
 
@@ -78,11 +87,19 @@ def _sparse_search(
     page_end: int | None = None,
     section: str | None = None,
 ) -> list[dict]:
-    where, params = _build_filters(textbook_ids, group_name, page_start=page_start, page_end=page_end, section=section)
+    where, params = _build_filters(
+        textbook_ids,
+        group_name,
+        page_start=page_start,
+        page_end=page_end,
+        section=section,
+    )
     params["query"] = query
     params["top_k"] = top_k
 
-    rows = db.execute(text(f"""
+    rows = (
+        db.execute(
+            text(f"""
         SELECT tc.id, tc.content, tc.chapter, tc.section, tc.chunk_type,
                tc.page_start, tc.page_end,
                tb.id AS textbook_id, tb.title AS textbook_title, tb.group_name,
@@ -93,11 +110,18 @@ def _sparse_search(
           AND to_tsvector('english', tc.content) @@ plainto_tsquery('english', CAST(:query AS text))
         ORDER BY score DESC
         LIMIT :top_k
-    """), params).mappings().all()
+    """),
+            params,
+        )
+        .mappings()
+        .all()
+    )
     return [dict(row) for row in rows]
 
 
-def _rrf_fuse(result_sets: list[list[dict]], k: int = 60, top_k: int = 15) -> list[dict]:
+def _rrf_fuse(
+    result_sets: list[list[dict]], k: int = 60, top_k: int = 15
+) -> list[dict]:
     fused: dict[str, tuple[dict, float]] = {}
     for results in result_sets:
         for rank, doc in enumerate(results):
@@ -110,7 +134,9 @@ def _rrf_fuse(result_sets: list[list[dict]], k: int = 60, top_k: int = 15) -> li
                 fused[doc_id] = (doc, score)
 
     output = []
-    for doc, rrf_score in sorted(fused.values(), key=lambda x: x[1], reverse=True)[:top_k]:
+    for doc, rrf_score in sorted(fused.values(), key=lambda x: x[1], reverse=True)[
+        :top_k
+    ]:
         doc["score"] = rrf_score
         output.append(doc)
     return output
@@ -126,8 +152,26 @@ def hybrid_search(
     page_end: int | None = None,
     section: str | None = None,
 ) -> list[dict]:
-    dense = _dense_search(db, query, textbook_ids, group_name, top_k=top_k, page_start=page_start, page_end=page_end, section=section)
-    sparse = _sparse_search(db, query, textbook_ids, group_name, top_k=top_k, page_start=page_start, page_end=page_end, section=section)
+    dense = _dense_search(
+        db,
+        query,
+        textbook_ids,
+        group_name,
+        top_k=top_k,
+        page_start=page_start,
+        page_end=page_end,
+        section=section,
+    )
+    sparse = _sparse_search(
+        db,
+        query,
+        textbook_ids,
+        group_name,
+        top_k=top_k,
+        page_start=page_start,
+        page_end=page_end,
+        section=section,
+    )
     return _rrf_fuse([dense, sparse], k=60, top_k=top_k)
 
 
@@ -142,8 +186,12 @@ def get_context_chunks(
     page_end: int | None = None,
     section: str | None = None,
 ) -> list[dict]:
-    fetch_k = max(settings.num_sources * settings.fetch_multiplier, settings.rerank_candidates)
-    kwargs = dict(top_k=fetch_k, page_start=page_start, page_end=page_end, section=section)
+    fetch_k = max(
+        settings.num_sources * settings.fetch_multiplier, settings.rerank_candidates
+    )
+    kwargs = dict(
+        top_k=fetch_k, page_start=page_start, page_end=page_end, section=section
+    )
 
     if settings.hybrid_search_enabled:
         results = hybrid_search(db, query, textbook_ids, group_name, **kwargs)
@@ -166,8 +214,13 @@ def rewrite_query(raw_query: str) -> str:
         return raw_query
 
     import re
+
     query = re.sub(r"^\[Reading textbook.*?\]\s*", "", raw_query)
-    query = re.sub(r"^(Create (a |)(flashcards|study guide)( covering each of these chapters)? for (these )?chapters:)", "", query)
+    query = re.sub(
+        r"^(Create (a |)(flashcards|study guide)( covering each of these chapters)? for (these )?chapters:)",
+        "",
+        query,
+    )
     query = re.sub(r"^(Summarize (these )?chapters:)", "", query)
     query = re.sub(r"\d+\.\d+:\s*", "", query)
     query = re.sub(r"\s{2,}", " ", query)
@@ -175,7 +228,21 @@ def rewrite_query(raw_query: str) -> str:
 
     if len(query.split()) < 3:
         return raw_query
-    if not re.search(r"[?!.…]\s*$", query) and not any(v in query.lower() for v in ("what", "how", "why", "explain", "describe", "define", "compare", "find", "tell", "show")):
+    if not re.search(r"[?!.…]\s*$", query) and not any(
+        v in query.lower()
+        for v in (
+            "what",
+            "how",
+            "why",
+            "explain",
+            "describe",
+            "define",
+            "compare",
+            "find",
+            "tell",
+            "show",
+        )
+    ):
         return raw_query
 
     try:
@@ -183,7 +250,8 @@ def rewrite_query(raw_query: str) -> str:
         rewritten, _ = llm_call(
             "You are a query rewriting assistant. Output only the rewritten query.",
             f"Rewrite this physics question into specific search terms with related concepts and standard physics terminology. Output ONLY the terms, no explanation:\n\nQuery: {query}",
-            task="rewrite", max_tokens=128,
+            task="rewrite",
+            max_tokens=128,
         )
         rewritten = rewritten.strip().strip('"').strip("'")
         elapsed = (time.monotonic() - t0) * 1000
@@ -200,7 +268,10 @@ RERANK_SCHEMA = {
             "type": "array",
             "items": {
                 "type": "object",
-                "properties": {"id": {"type": "integer"}, "score": {"type": "integer", "minimum": 1, "maximum": 5}},
+                "properties": {
+                    "id": {"type": "integer"},
+                    "score": {"type": "integer", "minimum": 1, "maximum": 5},
+                },
                 "required": ["id", "score"],
                 "additionalProperties": False,
             },
@@ -216,13 +287,26 @@ def _remote_rerank(candidates: list[dict], query: str, top_k: int) -> list[dict]
     if client is None or not settings.rerank_api_model:
         return None
     try:
-        passages = [f"[{i}] ({c.get('textbook_title', '')} p.{c.get('page_start', '?')}) {c['content'][:500].replace(chr(10), ' ')}" for i, c in enumerate(candidates[:settings.rerank_candidates])]
+        passages = [
+            f"[{i}] ({c.get('textbook_title', '')} p.{c.get('page_start', '?')}) {c['content'][:500].replace(chr(10), ' ')}"
+            for i, c in enumerate(candidates[: settings.rerank_candidates])
+        ]
         t0 = time.monotonic()
         resp = client.chat.completions.create(
             model=settings.rerank_api_model,
-            messages=[{"role": "user", "content": f"Query: {query}\n\nScore each passage 1-5 for relevance to the query.\n\n" + "\n\n".join(passages)}],
-            temperature=0.0, max_tokens=256,
-            response_format={"type": "json_schema", "json_schema": {"name": "rerank", "schema": RERANK_SCHEMA}},
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Query: {query}\n\nScore each passage 1-5 for relevance to the query.\n\n"
+                    + "\n\n".join(passages),
+                }
+            ],
+            temperature=0.0,
+            max_tokens=256,
+            response_format={
+                "type": "json_schema",
+                "json_schema": {"name": "rerank", "schema": RERANK_SCHEMA},
+            },
         )
         elapsed = (time.monotonic() - t0) * 1000
         data = json.loads(resp.choices[0].message.content or "{}")
@@ -230,10 +314,16 @@ def _remote_rerank(candidates: list[dict], query: str, top_k: int) -> list[dict]
         if not score_map:
             print(f"[LLM] rerank returned empty scores, falling back to local")
             return None
-        for i, c in enumerate(candidates[:settings.rerank_candidates]):
+        for i, c in enumerate(candidates[: settings.rerank_candidates]):
             c["rerank_score"] = score_map.get(i, 0)
-        reranked = sorted(candidates[:settings.rerank_candidates], key=lambda x: x.get("rerank_score", 0), reverse=True)
-        print(f"[LLM] rerank (remote) | {elapsed:.0f}ms | {len(candidates[:settings.rerank_candidates])} candidates")
+        reranked = sorted(
+            candidates[: settings.rerank_candidates],
+            key=lambda x: x.get("rerank_score", 0),
+            reverse=True,
+        )
+        print(
+            f"[LLM] rerank (remote) | {elapsed:.0f}ms | {len(candidates[: settings.rerank_candidates])} candidates"
+        )
         return reranked[:top_k]
     except Exception as e:
         print(f"[WARN] remote rerank failed: {e}")
@@ -247,6 +337,7 @@ def _get_cross_encoder():
     global _cross_encoder
     if _cross_encoder is None:
         from sentence_transformers import CrossEncoder
+
         _cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
     return _cross_encoder
 
@@ -261,10 +352,17 @@ def rerank_chunks(candidates: list[dict], query: str, top_k: int = 5) -> list[di
 
     try:
         model = _get_cross_encoder()
-        pairs = [(query, c["content"][:500].replace("\n", " ")) for c in candidates[:settings.rerank_candidates]]
+        pairs = [
+            (query, c["content"][:500].replace("\n", " "))
+            for c in candidates[: settings.rerank_candidates]
+        ]
         scores = model.predict(pairs, show_progress_bar=False)
-        for i, c in enumerate(candidates[:settings.rerank_candidates]):
+        for i, c in enumerate(candidates[: settings.rerank_candidates]):
             c["rerank_score"] = float(scores[i])
-        return sorted(candidates[:settings.rerank_candidates], key=lambda x: x.get("rerank_score", 0), reverse=True)[:top_k]
+        return sorted(
+            candidates[: settings.rerank_candidates],
+            key=lambda x: x.get("rerank_score", 0),
+            reverse=True,
+        )[:top_k]
     except Exception:
         return candidates[:top_k]

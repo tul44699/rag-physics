@@ -60,7 +60,9 @@ def classify_chunk(content: str) -> str:
         return "equation"
 
     # Check for definition
-    def_score = sum(1 for p in DEFINITION_PATTERNS if re.search(p, content, re.IGNORECASE))
+    def_score = sum(
+        1 for p in DEFINITION_PATTERNS if re.search(p, content, re.IGNORECASE)
+    )
     if def_score >= 1:
         return "definition"
 
@@ -70,7 +72,9 @@ def classify_chunk(content: str) -> str:
         return "example"
 
     # Check for derivation
-    der_score = sum(1 for p in DERIVATION_PATTERNS if re.search(p, content, re.IGNORECASE))
+    der_score = sum(
+        1 for p in DERIVATION_PATTERNS if re.search(p, content, re.IGNORECASE)
+    )
     if der_score >= 2:
         return "derivation"
 
@@ -86,6 +90,18 @@ def classify_query(query: str) -> dict:
 
     return {
         "is_math_query": (math_score >= 1 or plain_eq >= 1),
-        "is_definition_query": bool(re.search(r"\b(?:what\s+is|define|definition|meaning\s+of)\b", query, re.IGNORECASE)),
-        "is_derivation_query": bool(re.search(r"\b(?:derive|derivation|how\s+(?:do|does|is)|show\s+that|prove)\b", query, re.IGNORECASE)),
+        "is_definition_query": bool(
+            re.search(
+                r"\b(?:what\s+is|define|definition|meaning\s+of)\b",
+                query,
+                re.IGNORECASE,
+            )
+        ),
+        "is_derivation_query": bool(
+            re.search(
+                r"\b(?:derive|derivation|how\s+(?:do|does|is)|show\s+that|prove)\b",
+                query,
+                re.IGNORECASE,
+            )
+        ),
     }

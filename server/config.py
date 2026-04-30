@@ -1,9 +1,12 @@
 from openai import OpenAI
 import re
 from pydantic_settings import BaseSettings, SettingsConfigDict
- 
+
+
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+    )
 
     app_name: str = "Physics RAG"
     database_url: str
@@ -32,21 +35,19 @@ class Settings(BaseSettings):
 
     chunk_min_size: int = 200
     chunk_max_size: int = 1500
-    semantic_chunking_enabled: bool = False 
+    semantic_chunking_enabled: bool = False
 
     jwt_secret: str
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 1440
 
 
-settings = Settings() #pyright: ignore[reportCallIssue]
+settings = Settings()  # pyright: ignore[reportCallIssue]
 
-_client = OpenAI(
-    base_url=settings.vllm_base_url,
-    api_key="placeholder"
-)
+_client = OpenAI(base_url=settings.vllm_base_url, api_key="placeholder")
 
 _embedding_client: OpenAI | None = None
+
 
 def get_embedding_client() -> OpenAI | None:
     global _embedding_client
@@ -57,7 +58,9 @@ def get_embedding_client() -> OpenAI | None:
         )
     return _embedding_client
 
+
 _rerank_client: OpenAI | None = None
+
 
 def get_rerank_client() -> OpenAI | None:
     global _rerank_client
@@ -68,23 +71,53 @@ def get_rerank_client() -> OpenAI | None:
         )
     return _rerank_client
 
+
 _THINK_RE = re.compile(r"<think>(.*?)</think>\s*", re.DOTALL)
+
 
 def _split_think(raw: str) -> tuple[str, str | None]:
     m = _THINK_RE.match(raw)
     if m:
         think = m.group(1).strip()
-        answer = raw[m.end():].strip()
+        answer = raw[m.end() :].strip()
         return answer, think
     return raw.strip(), None
 
 
 _SAMPLING_PRESETS = {
-    "rewrite":  {"temperature": 0.7, "top_p": 0.8, "top_k": 40, "min_p": 0.0, "presence_penalty": 1.5, "repetition_penalty": 1.0},
-    "rerank":   {"temperature": 1.0, "top_p": 0.95, "top_k": 40, "min_p": 0.0, "presence_penalty": 1.5, "repetition_penalty": 1.0},
-    "general":  {"temperature": 0.7, "top_p": 0.8, "top_k": 40, "min_p": 0.0, "presence_penalty": 1.5, "repetition_penalty": 1.0},
+    "rewrite": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 40,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repetition_penalty": 1.0,
+    },
+    "rerank": {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 40,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repetition_penalty": 1.0,
+    },
+    "general": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 40,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repetition_penalty": 1.0,
+    },
 }
-_THINKING_PARAMS = {"temperature": 1.0, "top_p": 0.95, "top_k": 40, "min_p": 0.0, "presence_penalty": 0.0, "repetition_penalty": 1.0}
+_THINKING_PARAMS = {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 40,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repetition_penalty": 1.0,
+}
 
 
 def llm_call(
@@ -107,7 +140,9 @@ def llm_call(
 
     if task is not None:
         if task not in _SAMPLING_PRESETS:
-            raise ValueError(f"Unknown task {task!r}. Choose from: {list(_SAMPLING_PRESETS)}")
+            raise ValueError(
+                f"Unknown task {task!r}. Choose from: {list(_SAMPLING_PRESETS)}"
+            )
         p = _SAMPLING_PRESETS[task]
         extra = {**p, "chat_template_kwargs": {"enable_thinking": False}}
     else:
@@ -116,7 +151,10 @@ def llm_call(
 
     resp = _client.chat.completions.create(
         model=settings.chat_model,
-        messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ],
         max_tokens=max_tokens,
         stream=True,
         extra_body=extra,
@@ -124,11 +162,13 @@ def llm_call(
     )
 
     if stream:
+
         def _stream():
             for chunk in resp:
                 delta = chunk.choices[0].delta if chunk.choices else None
                 if delta and delta.content:
                     yield delta.content
+
         return _stream()
 
     raw = ""

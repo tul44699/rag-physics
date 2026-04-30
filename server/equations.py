@@ -1,4 +1,3 @@
-
 import re
 
 from sqlalchemy import text
@@ -16,11 +15,51 @@ LATEX_PATTERNS = [
 ]
 
 _PHYSICS_VARS = {
-    "F", "m", "a", "v", "t", "x", "E", "B", "q", "I", "V", "R", "C", "L",
-    "P", "U", "K", "W", "T", "p", "ρ", "ε", "μ", "σ",
-    "λ", "ω", "φ", "ψ", "π", "θ",
-    "r", "J", "H", "D", "A", "S", "N", "n", "k", "G", "g", "h",
-    "∇", "∂", "Ω",
+    "F",
+    "m",
+    "a",
+    "v",
+    "t",
+    "x",
+    "E",
+    "B",
+    "q",
+    "I",
+    "V",
+    "R",
+    "C",
+    "L",
+    "P",
+    "U",
+    "K",
+    "W",
+    "T",
+    "p",
+    "ρ",
+    "ε",
+    "μ",
+    "σ",
+    "λ",
+    "ω",
+    "φ",
+    "ψ",
+    "π",
+    "θ",
+    "r",
+    "J",
+    "H",
+    "D",
+    "A",
+    "S",
+    "N",
+    "n",
+    "k",
+    "G",
+    "g",
+    "h",
+    "∇",
+    "∂",
+    "Ω",
 }
 
 _GARBAGE_PATTERNS = [
@@ -45,7 +84,15 @@ def _is_garbage(plain: str, vars_used: set[str]) -> bool:
     if not vars_used:
         return True
 
-    tokens = s.replace("−", " ").replace("=", " ").replace("+", " ").replace("−", " ").replace("·", " ").replace("×", " ").split()
+    tokens = (
+        s.replace("−", " ")
+        .replace("=", " ")
+        .replace("+", " ")
+        .replace("−", " ")
+        .replace("·", " ")
+        .replace("×", " ")
+        .split()
+    )
     long_tokens = [t for t in tokens if re.match(r"^[a-zA-Z]{5,}$", t)]
     if len(long_tokens) > 3:
         return True
@@ -83,11 +130,13 @@ def extract_equations(content: str) -> list[dict]:
             vars_used = _extract_variables(eq)
             if _is_garbage(plain, vars_used):
                 continue
-            equations.append({
-                "latex": eq,
-                "plain_text": plain,
-                "variables": sorted(vars_used),
-            })
+            equations.append(
+                {
+                    "latex": eq,
+                    "plain_text": plain,
+                    "variables": sorted(vars_used),
+                }
+            )
 
     for eq in _find_plain_equations(content):
         if eq in seen:
@@ -97,11 +146,13 @@ def extract_equations(content: str) -> list[dict]:
         plain = eq.replace("−", "-").replace("×", "*").replace("·", "*")
         if _is_garbage(plain, vars_used):
             continue
-        equations.append({
-            "latex": None,
-            "plain_text": eq,
-            "variables": sorted(vars_used),
-        })
+        equations.append(
+            {
+                "latex": None,
+                "plain_text": eq,
+                "variables": sorted(vars_used),
+            }
+        )
 
     return equations
 
@@ -115,7 +166,9 @@ def _find_plain_equations(content: str) -> list[str]:
             continue
         if not re.match(r"^[A-Za-zΔ∇∂]", line):
             continue
-        if not any(v in line for v in ["m", "F", "v", "a", "x", "t", "E", "p", "g", "k", "T"]):
+        if not any(
+            v in line for v in ["m", "F", "v", "a", "x", "t", "E", "p", "g", "k", "T"]
+        ):
             continue
         word_count = len(re.findall(r"[a-zA-Z]{3,}", line))
         if word_count > 8:
@@ -175,7 +228,9 @@ def _extract_variables(expr: str) -> set[str]:
     return found
 
 
-def retrieve_equations(db: Session, query_text: str, textbook_ids: list[int] | None, top_k: int = 5) -> list[dict]:
+def retrieve_equations(
+    db: Session, query_text: str, textbook_ids: list[int] | None, top_k: int = 5
+) -> list[dict]:
     """Retrieve equations by embedding similarity + variable overlap reranking."""
     vector = embed_text(query_text, is_query=True)
     query_vars = _extract_variables(query_text)

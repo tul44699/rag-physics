@@ -31,7 +31,9 @@ def build_profile_context(profile: dict, understanding_level: str | None = None)
 
 
 def build_system_prompt(profile: dict, understanding_level: str | None = None) -> str:
-    return SYSTEM_PROMPT.format(profile_context=build_profile_context(profile, understanding_level))
+    return SYSTEM_PROMPT.format(
+        profile_context=build_profile_context(profile, understanding_level)
+    )
 
 
 TASK_INSTRUCTIONS = {

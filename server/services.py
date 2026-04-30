@@ -37,13 +37,20 @@ def _log_llm(label: str, prompt: str, response: str, elapsed_ms: float) -> None:
     prompt_chars = len(prompt)
     resp_chars = len(response)
     preview = response[:200].replace("\n", "\\n")
-    print(f"[LLM] {label} | {elapsed_ms:.0f}ms | prompt={prompt_chars}c | resp={resp_chars}c")
-    print(f"[LLM] {label} preview: {preview}..." if len(response) > 200 else f"[LLM] {label} output: {preview}")
+    print(
+        f"[LLM] {label} | {elapsed_ms:.0f}ms | prompt={prompt_chars}c | resp={resp_chars}c"
+    )
+    print(
+        f"[LLM] {label} preview: {preview}..."
+        if len(response) > 200
+        else f"[LLM] {label} output: {preview}"
+    )
 
 
 @dataclass
 class PageDocument:
     """Minimal Document for langchain compatibility."""
+
     page_content: str
     metadata: dict
 
@@ -58,6 +65,7 @@ def _extract_pages(pdf_path: str, reader: PdfReader) -> list[PageDocument]:
 def _extract_pages_llamaparse(pdf_path: str, reader: PdfReader) -> list[PageDocument]:
     """Extract per-page markdown via LlamaParse."""
     import asyncio
+
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
@@ -65,6 +73,7 @@ def _extract_pages_llamaparse(pdf_path: str, reader: PdfReader) -> list[PageDocu
 
     if loop and loop.is_running():
         import concurrent.futures
+
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
             future = pool.submit(asyncio.run, _parse_with_llamaparse(pdf_path))
             return future.result()
@@ -74,6 +83,7 @@ def _extract_pages_llamaparse(pdf_path: str, reader: PdfReader) -> list[PageDocu
 
 async def _parse_with_llamaparse(pdf_path: str) -> list[PageDocument]:
     from llama_cloud_services import LlamaParse
+
     file_name = Path(pdf_path).name
     parser = LlamaParse(
         parse_mode="parse_page_with_agent",
@@ -98,10 +108,12 @@ Omit page numbers, headers, and footers.""",
     for page in result.pages:
         page_num = page.page or 1
         content = page.md or page.text or ""
-        docs.append(PageDocument(
-            page_content=content,
-            metadata={"page": page_num},
-        ))
+        docs.append(
+            PageDocument(
+                page_content=content,
+                metadata={"page": page_num},
+            )
+        )
     print(f"LlamaParse returned {len(docs)} pages with proper page numbers")
     return docs
 
@@ -109,12 +121,12 @@ Omit page numbers, headers, and footers.""",
 def _semantic_split(docs, chunk_size: int, chunk_overlap: int) -> list:
     """Structure-aware chunking with equation boundary awareness."""
     separators = [
-        "\n\n## ",        # Markdown section headers
-        "\n\n### ",       # Subsection headers
-        "\n\n",           # Paragraphs
-        "\n",             # Lines
-        ". ",             # Sentences
-        " ",              # Words
+        "\n\n## ",  # Markdown section headers
+        "\n\n### ",  # Subsection headers
+        "\n\n",  # Paragraphs
+        "\n",  # Lines
+        ". ",  # Sentences
+        " ",  # Words
     ]
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
@@ -177,10 +189,10 @@ def _extract_section(content: str) -> str | None:
     first_line = content.split("\n")[0].strip()
     cleaned = re.sub(r"^#{1,3}\s*", "", first_line)
     for pattern in [
-        r"^(\d+\.\d+(?:\.\d+)?[:\s].+)",     # "1.4: Newton's Laws" or "1.4 Title"
-        r"^(Section\s+\d+\.\d+.*)",            # "Section 3.1"
-        r"^(Chapter\s+\d+.*)",                 # "Chapter 5"
-        r"^(Week\s+\d+.*)",                    # "Week 1: Newton's Laws"
+        r"^(\d+\.\d+(?:\.\d+)?[:\s].+)",  # "1.4: Newton's Laws" or "1.4 Title"
+        r"^(Section\s+\d+\.\d+.*)",  # "Section 3.1"
+        r"^(Chapter\s+\d+.*)",  # "Chapter 5"
+        r"^(Week\s+\d+.*)",  # "Week 1: Newton's Laws"
     ]:
         m = re.match(pattern, cleaned, re.IGNORECASE)
         if m:
@@ -188,19 +200,23 @@ def _extract_section(content: str) -> str | None:
     return None
 
 
-def _walk_outline(items: list, reader: PdfReader, depth: int = 0, max_depth: int = 2) -> list[dict]:
+def _walk_outline(
+    items: list, reader: PdfReader, depth: int = 0, max_depth: int = 2
+) -> list[dict]:
     """Walk PDF outline to collect chapter entries with page numbers."""
     entries: list[dict] = []
     for item in items:
         if isinstance(item, list):
             entries.extend(_walk_outline(item, reader, depth + 1, max_depth))
-        elif hasattr(item, 'title') and hasattr(item, 'page') and depth <= max_depth:
+        elif hasattr(item, "title") and hasattr(item, "page") and depth <= max_depth:
             page_num = reader.get_page_number(item.page) + 1 if item.page else None
-            entries.append({
-                "title": str(item.title).strip(),
-                "page_start": page_num or 1,
-                "page_end": None,
-            })
+            entries.append(
+                {
+                    "title": str(item.title).strip(),
+                    "page_start": page_num or 1,
+                    "page_end": None,
+                }
+            )
     return entries
 
 
@@ -209,9 +225,9 @@ def _is_chapter_title(title: str) -> bool:
     skip_patterns = [
         r"^\s*(?:preface|foreword|acknowledgments?|copyright|front\s+cover|back\s+cover)\b",
         r"^\s*(?:contents?|bibliography|references?|glossary|index)\b",
-        r"\bsummary\b",                      # "Summary", "Statics Summary", "Fluids Summary", etc.
-        r"^\s*(?:homework\s+for)\b",        # "Homework for Week 1"
-        r"^\s*(?:textbook\s+layout)\b",     # "Textbook Layout and Design"
+        r"\bsummary\b",  # "Summary", "Statics Summary", "Fluids Summary", etc.
+        r"^\s*(?:homework\s+for)\b",  # "Homework for Week 1"
+        r"^\s*(?:textbook\s+layout)\b",  # "Textbook Layout and Design"
         r"^\s*$",
     ]
     for pat in skip_patterns:
@@ -264,7 +280,9 @@ def ingest_textbook(
     reader = PdfReader(pdf_path)
     page_count = len(reader.pages)
 
-    textbook = Textbook(title=title, source_path=pdf_path, group_name=group_name, page_count=page_count)
+    textbook = Textbook(
+        title=title, source_path=pdf_path, group_name=group_name, page_count=page_count
+    )
     db.add(textbook)
     db.flush()
 
@@ -283,7 +301,9 @@ def ingest_textbook(
     if settings.semantic_chunking_enabled:
         chunks = _semantic_split(docs, chunk_size, chunk_overlap)
     else:
-        splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size, chunk_overlap=chunk_overlap
+        )
         chunks = splitter.split_documents(docs)
 
     eq_data: list[dict] = []
@@ -303,30 +323,37 @@ def ingest_textbook(
             current_section = section
         chunk_type = classify_chunk(item.page_content)
         chunk_id = _uuid.uuid4()
-        chunk_data.append({
-            "id": chunk_id,
-            "textbook_id": textbook.id,
-            "chapter": matched_chapter or chapter_hint,
-            "section": current_section,
-            "page_start": page,
-            "page_end": page,
-            "chunk_type": chunk_type,
-            "content": item.page_content,
-            "metadata_json": {"embedding_model": settings.embedding_api_model or settings.embedding_model},
-        })
-        chunk_texts.append(item.page_content)
-
-        for eq in extract_equations(item.page_content):
-            eq_data.append({
+        chunk_data.append(
+            {
+                "id": chunk_id,
                 "textbook_id": textbook.id,
-                "chunk_id": chunk_id,
                 "chapter": matched_chapter or chapter_hint,
                 "section": current_section,
                 "page_start": page,
-                "latex": eq["latex"],
-                "plain_text": eq["plain_text"],
-                "variables": eq["variables"],
-            })
+                "page_end": page,
+                "chunk_type": chunk_type,
+                "content": item.page_content,
+                "metadata_json": {
+                    "embedding_model": settings.embedding_api_model
+                    or settings.embedding_model
+                },
+            }
+        )
+        chunk_texts.append(item.page_content)
+
+        for eq in extract_equations(item.page_content):
+            eq_data.append(
+                {
+                    "textbook_id": textbook.id,
+                    "chunk_id": chunk_id,
+                    "chapter": matched_chapter or chapter_hint,
+                    "section": current_section,
+                    "page_start": page,
+                    "latex": eq["latex"],
+                    "plain_text": eq["plain_text"],
+                    "variables": eq["variables"],
+                }
+            )
             eq_texts.append(eq["plain_text"])
 
     print(f"Collected {len(chunk_data)} chunks and {len(eq_data)} equations")
@@ -459,7 +486,13 @@ STUDY_GUIDE_SCHEMA = {
             "items": {"type": "string"},
         },
     },
-    "required": ["title", "key_concepts", "key_equations", "common_mistakes", "sources"],
+    "required": [
+        "title",
+        "key_concepts",
+        "key_equations",
+        "common_mistakes",
+        "sources",
+    ],
     "additionalProperties": False,
 }
 
@@ -492,7 +525,13 @@ CHAPTER_SUMMARY_SCHEMA = {
             "items": {"type": "string"},
         },
     },
-    "required": ["chapter_name", "core_concepts", "essential_formulas", "common_mistakes", "sources"],
+    "required": [
+        "chapter_name",
+        "core_concepts",
+        "essential_formulas",
+        "common_mistakes",
+        "sources",
+    ],
     "additionalProperties": False,
 }
 
@@ -556,7 +595,9 @@ def _render_chapter_summary(d: dict) -> str:
     return "\n".join(lines)
 
 
-def _extract_referenced_sources(chunks: list[dict], parsed: list | dict | None, task: str, answer: str) -> list[dict]:
+def _extract_referenced_sources(
+    chunks: list[dict], parsed: list | dict | None, task: str, answer: str
+) -> list[dict]:
     """Filter chunks to only those referenced in the output."""
     if not chunks:
         return chunks
@@ -617,14 +658,32 @@ def _retrieve_and_build_prompt(
 
     history = (
         db.query(ChatMessage)
-        .filter(ChatMessage.conversation_id == conversation_id, ChatMessage.user_id == user_id)
-        .order_by(ChatMessage.id.desc()).limit(4).all()
+        .filter(
+            ChatMessage.conversation_id == conversation_id,
+            ChatMessage.user_id == user_id,
+        )
+        .order_by(ChatMessage.id.desc())
+        .limit(4)
+        .all()
     )
     history = list(reversed(history))
 
     # Auto-detect follow-ups: short prompt with existing history → conversational mode
     if history and len(prompt.strip().split()) < 15:
-        q_words = ("what", "how", "why", "explain", "describe", "define", "compare", "create", "generate", "summarize", "make", "find")
+        q_words = (
+            "what",
+            "how",
+            "why",
+            "explain",
+            "describe",
+            "define",
+            "compare",
+            "create",
+            "generate",
+            "summarize",
+            "make",
+            "find",
+        )
         if not any(prompt.strip().lower().startswith(w) for w in q_words):
             task = "follow_up"
 
@@ -637,21 +696,43 @@ def _retrieve_and_build_prompt(
         chunk_types = ["derivation"]
 
     candidates = get_context_chunks(
-        db, search_query, textbook_ids, group_name,
+        db,
+        search_query,
+        textbook_ids,
+        group_name,
         boost_equations=qc["is_math_query"],
         chunk_types=chunk_types,
-        page_start=page_start, page_end=page_end,
+        page_start=page_start,
+        page_end=page_end,
     )
     chunks = rerank_chunks(candidates, prompt, top_k=settings.num_sources)
 
     if settings.min_source_score > 0 and any("rerank_score" in c for c in chunks):
-        chunks = [c for c in chunks if c.get("rerank_score", 0) >= settings.min_source_score]
-    chunks = chunks[:settings.num_sources]
+        chunks = [
+            c for c in chunks if c.get("rerank_score", 0) >= settings.min_source_score
+        ]
+    chunks = chunks[: settings.num_sources]
 
     if not chunks:
         fallback = "I couldn't find relevant material in the textbook to answer this question. Try rephrasing or broadening your search."
-        db.add(ChatMessage(conversation_id=conversation_id, user_id=user_id, role="user", task=task, content=prompt))
-        db.add(ChatMessage(conversation_id=conversation_id, user_id=user_id, role="assistant", task=task, content=fallback))
+        db.add(
+            ChatMessage(
+                conversation_id=conversation_id,
+                user_id=user_id,
+                role="user",
+                task=task,
+                content=prompt,
+            )
+        )
+        db.add(
+            ChatMessage(
+                conversation_id=conversation_id,
+                user_id=user_id,
+                role="assistant",
+                task=task,
+                content=fallback,
+            )
+        )
         db.commit()
         return fallback, None, None
 
@@ -666,7 +747,9 @@ def _retrieve_and_build_prompt(
 
     context_parts = []
     for idx, chunk in enumerate(chunks):
-        ctype = f" [{chunk.get('chunk_type', 'text')}]" if chunk.get("chunk_type") else ""
+        ctype = (
+            f" [{chunk.get('chunk_type', 'text')}]" if chunk.get("chunk_type") else ""
+        )
         section_info = f" §{chunk.get('section')}" if chunk.get("section") else ""
         context_parts.append(
             f"[{idx + 1}]{ctype}{section_info} {chunk['textbook_title']} p.{chunk.get('page_start')}: {chunk['content'][:3000]}"
@@ -679,8 +762,11 @@ def _retrieve_and_build_prompt(
         profile_context=build_profile_context(profile, understanding_level)
     )
     user_prompt = build_user_prompt(
-        prompt=prompt, task=task, context=context,
-        eq_context=eq_context, history_text=history_text,
+        prompt=prompt,
+        task=task,
+        context=context,
+        eq_context=eq_context,
+        history_text=history_text,
     )
     return system_prompt, user_prompt, chunks
 
@@ -708,7 +794,7 @@ def best_excerpt(content: str, query: str, max_len: int = 240) -> str:
     best_start = 0
     best_score = 0
     for i in range(0, len(content) - max_len, 40):
-        window = content[i:i + max_len].lower()
+        window = content[i : i + max_len].lower()
         score = sum(1 for t in query_terms if t in window)
         if score > best_score:
             best_score = score
@@ -718,16 +804,20 @@ def best_excerpt(content: str, query: str, max_len: int = 240) -> str:
         prev_period = content.rfind(". ", 0, start)
         if prev_period > 0:
             start = prev_period + 2
-    return content[start:start + max_len].strip()
+    return content[start : start + max_len].strip()
 
 
 def _source_list(chunks: list[dict], query: str = "") -> list[dict]:
     return [
         {
-            "textbook_id": s.get("textbook_id"), "textbook": s["textbook_title"],
-            "chapter": s.get("chapter"), "section": s.get("section"),
-            "page_start": s.get("page_start"), "page_end": s.get("page_end"),
-            "group_name": s.get("group_name"), "chunk_type": s.get("chunk_type"),
+            "textbook_id": s.get("textbook_id"),
+            "textbook": s["textbook_title"],
+            "chapter": s.get("chapter"),
+            "section": s.get("section"),
+            "page_start": s.get("page_start"),
+            "page_end": s.get("page_end"),
+            "group_name": s.get("group_name"),
+            "chunk_type": s.get("chunk_type"),
             "rerank_score": s.get("rerank_score"),
             "snippet": best_excerpt(s["content"], query),
         }
@@ -748,24 +838,55 @@ def answer_query(
     page_end: int | None = None,
 ) -> tuple[str, list[dict], list | dict | None]:
     system_prompt, user_prompt, chunks = _retrieve_and_build_prompt(
-        db, user_id, conversation_id, prompt, task, understanding_level,
-        textbook_ids, group_name, page_start, page_end,
+        db,
+        user_id,
+        conversation_id,
+        prompt,
+        task,
+        understanding_level,
+        textbook_ids,
+        group_name,
+        page_start,
+        page_end,
     )
     if user_prompt is None:
         return system_prompt, [], None  # fallback message
 
     t0 = time.monotonic()
     json_schema = TASK_SCHEMAS.get(task)
-    answer, think = llm_call(system_prompt, user_prompt, json_schema=json_schema, json_schema_name=task)
-    _log_llm(f"answer ({task})", system_prompt + "\n" + user_prompt, answer, (time.monotonic() - t0) * 1000)
+    answer, think = llm_call(
+        system_prompt, user_prompt, json_schema=json_schema, json_schema_name=task
+    )
+    _log_llm(
+        f"answer ({task})",
+        system_prompt + "\n" + user_prompt,
+        answer,
+        (time.monotonic() - t0) * 1000,
+    )
 
     parsed, display_content = _parse_and_render(answer, task)
     if json_schema is not None and not answer.strip():
         print(f"[WARN] LLM returned empty answer for task={task}")
         display_content = "I couldn't generate a response. Please try again."
 
-    db.add(ChatMessage(conversation_id=conversation_id, user_id=user_id, role="user", task=task, content=prompt))
-    db.add(ChatMessage(conversation_id=conversation_id, user_id=user_id, role="assistant", task=task, content=display_content))
+    db.add(
+        ChatMessage(
+            conversation_id=conversation_id,
+            user_id=user_id,
+            role="user",
+            task=task,
+            content=prompt,
+        )
+    )
+    db.add(
+        ChatMessage(
+            conversation_id=conversation_id,
+            user_id=user_id,
+            role="assistant",
+            task=task,
+            content=display_content,
+        )
+    )
     db.commit()
 
     sources = _extract_referenced_sources(chunks, parsed, task, display_content)
@@ -786,8 +907,16 @@ def answer_query_stream(
 ):
 
     system_prompt, user_prompt, chunks = _retrieve_and_build_prompt(
-        db, user_id, conversation_id, prompt, task, understanding_level,
-        textbook_ids, group_name, page_start, page_end,
+        db,
+        user_id,
+        conversation_id,
+        prompt,
+        task,
+        understanding_level,
+        textbook_ids,
+        group_name,
+        page_start,
+        page_end,
     )
     if user_prompt is None:
         yield f"data: {_json.dumps({'token': system_prompt})}\n\n"
@@ -796,7 +925,13 @@ def answer_query_stream(
 
     raw = ""
     t0 = time.monotonic()
-    for token in llm_call(system_prompt, user_prompt, json_schema=TASK_SCHEMAS.get(task), json_schema_name=task, stream=True):
+    for token in llm_call(
+        system_prompt,
+        user_prompt,
+        json_schema=TASK_SCHEMAS.get(task),
+        json_schema_name=task,
+        stream=True,
+    ):
         raw += token
         yield f"data: {_json.dumps({'token': token})}\n\n"
 
@@ -807,6 +942,22 @@ def answer_query_stream(
     sources = _extract_referenced_sources(chunks, parsed, task, display_content)
     yield f"data: {_json.dumps({'done': True, 'sources': _source_list(sources, prompt), 'parsed': parsed, 'display_content': display_content})}\n\n"
 
-    db.add(ChatMessage(conversation_id=conversation_id, user_id=user_id, role="user", task=task, content=prompt))
-    db.add(ChatMessage(conversation_id=conversation_id, user_id=user_id, role="assistant", task=task, content=display_content))
+    db.add(
+        ChatMessage(
+            conversation_id=conversation_id,
+            user_id=user_id,
+            role="user",
+            task=task,
+            content=prompt,
+        )
+    )
+    db.add(
+        ChatMessage(
+            conversation_id=conversation_id,
+            user_id=user_id,
+            role="assistant",
+            task=task,
+            content=display_content,
+        )
+    )
     db.commit()

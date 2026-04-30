@@ -16,7 +16,8 @@ PAGES = [
         "formulated this principle through his experiments with inclined planes. "
         "The concept of inertia explains why passengers lurch forward when a car stops suddenly. "
         "Inertial reference frames are those in which Newton's first law holds true. "
-    ) * 3,
+    )
+    * 3,
     # Page 2: Newton's Second Law
     (
         "Newton's Second Law establishes the quantitative relationship between force, mass, "
@@ -25,7 +26,8 @@ PAGES = [
         "same direction as the net force. The SI unit of force is the newton, defined as "
         "kilogram meters per second squared. This law allows prediction of motion given forces. "
         "Free-body diagrams help visualize all forces acting on an object. "
-    ) * 3,
+    )
+    * 3,
     # Page 3: Newton's Third Law
     (
         "Newton's Third Law states that for every action, there is an equal and opposite "
@@ -34,7 +36,8 @@ PAGES = [
         "different objects, so they do not cancel. Examples include the recoil of a gun, "
         "the propulsion of a rocket, and the normal force between surfaces in contact. "
         "Action-reaction pairs are fundamental to understanding interactions. "
-    ) * 3,
+    )
+    * 3,
     # Page 4: Conservation of Energy
     (
         "The law of Conservation of Energy states that energy cannot be created or destroyed, "
@@ -44,7 +47,8 @@ PAGES = [
         "potential energy equals m g h. Non-conservative forces like friction "
         "convert mechanical energy into thermal energy. The work-energy theorem relates "
         "net work to the change in kinetic energy. "
-    ) * 3,
+    )
+    * 3,
     # Page 5: Conservation of Momentum
     (
         "Conservation of Momentum states that the total momentum of a closed system remains "
@@ -53,7 +57,8 @@ PAGES = [
         "conserve both momentum and kinetic energy, while inelastic collisions conserve only "
         "momentum. The impulse-momentum theorem relates impulse J equals F delta t to "
         "the change in momentum delta p. Center of mass motion is unaffected by internal forces. "
-    ) * 3,
+    )
+    * 3,
 ]
 
 

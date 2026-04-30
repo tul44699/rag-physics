@@ -44,7 +44,9 @@ class Textbook(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String(255), index=True)
     source_path: Mapped[str] = mapped_column(String(1000))
-    group_name: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
+    group_name: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, index=True
+    )
     page_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     chapter_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
@@ -58,13 +60,17 @@ class Textbook(Base):
 class TextChunk(Base):
     __tablename__ = "text_chunks"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     textbook_id: Mapped[int] = mapped_column(ForeignKey("textbooks.id"), index=True)
     chapter: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
     section: Mapped[str | None] = mapped_column(String(255), nullable=True)
     page_start: Mapped[int | None] = mapped_column(Integer, nullable=True)
     page_end: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    chunk_type: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)
+    chunk_type: Mapped[str | None] = mapped_column(
+        String(50), nullable=True, index=True
+    )
     content: Mapped[str] = mapped_column(Text)
     metadata_json: Mapped[dict] = mapped_column(JSON, default=dict)
     embedding: Mapped[list[float]] = mapped_column(Vector(settings.embedding_dim))
@@ -78,7 +84,9 @@ class Equation(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     textbook_id: Mapped[int] = mapped_column(ForeignKey("textbooks.id"), index=True)
-    chunk_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("text_chunks.id"), nullable=True)
+    chunk_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("text_chunks.id"), nullable=True
+    )
     chapter: Mapped[str | None] = mapped_column(String(255), nullable=True)
     section: Mapped[str | None] = mapped_column(String(255), nullable=True)
     page_start: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -117,7 +125,9 @@ class ConceptChunk(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     concept_id: Mapped[int] = mapped_column(ForeignKey("concepts.id"), index=True)
-    chunk_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("text_chunks.id"), index=True)
+    chunk_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("text_chunks.id"), index=True
+    )
 
 
 class UserProfile(Base):
@@ -126,7 +136,9 @@ class UserProfile(Base):
     user_id: Mapped[str] = mapped_column(String(100), primary_key=True)
     profile_json: Mapped[dict] = mapped_column(JSON, default=dict)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
     )
 
 
@@ -135,12 +147,16 @@ class StudyEvent(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[str] = mapped_column(String(100), index=True)
-    textbook_id: Mapped[int | None] = mapped_column(ForeignKey("textbooks.id"), nullable=True, index=True)
+    textbook_id: Mapped[int | None] = mapped_column(
+        ForeignKey("textbooks.id"), nullable=True, index=True
+    )
     chapter: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
     event_type: Mapped[str] = mapped_column(String(50), index=True)
     minutes_spent: Mapped[int] = mapped_column(Integer, default=0)
     score: Mapped[float | None] = mapped_column(Float, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
 
 
 class ChatMessage(Base):
@@ -152,4 +168,6 @@ class ChatMessage(Base):
     role: Mapped[str] = mapped_column(String(20))
     task: Mapped[str] = mapped_column(String(50), default="qa")
     content: Mapped[str] = mapped_column(Text)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
